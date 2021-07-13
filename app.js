@@ -1,40 +1,41 @@
 let Products = require('./model/Product')
 const Express = require('express')
 const Product = require('./Products')
-const moment = require('moment')
-const fs = require('fs')
+// const moment = require('moment')
+// const fs = require('fs')
 
 
 const app = Express();
 //Middlewares
 app.use(Express.urlencoded({ extended: true }))
 app.use(Express.json())
-app.use(logger)
+// app.use(logger)
 
 
-function logger(req, res, next) {
-    let accessTime = moment().format('MMMM Do YYYY, h:mm:ss a');
-    const ip = req.ip
-    const path = req.path
-    const logg = `User ${ip} requested resource from ${path}  ${accessTime} \n`
-    fs.appendFile('./model/log.txt', logg, (err) => {
-        if (err) {
-            console.error(err)
-            return
-        }
-        else console.log(logg)
-    })
-    next()
+// function logger(req, res, next) {
+//     let accessTime = moment().format('MMMM Do YYYY, h:mm:ss a');
+//     const ip = req.ip
+//     const path = req.path
+//     const logg = `User ${ip} requested resource from ${path}  ${accessTime} \n`
+//     fs.appendFile('./model/log.txt', logg, (err) => {
+//         if (err) {
+//             console.error(err)
+//             return
+//         }
+//         else console.log(logg)
+//     })
+//     next()
    
-}
+// }
 
 // get products
 app.get('/products', (request, response) => {
     response.json(Products)
 })
-app.post('/create', (request, response) => {
+app.post('/products', (request, response) => {
     let dataBody = request.body
-    let product = new Product(dataBody.name, dataBody.description, dataBody.image, dataBody.price)
+    let product = { id: generateID(),name:dataBody.name, description:dataBody.description,image:dataBody.image, price:dataBody.price }
+   
     Products.push(product)
     response.json(Products)
 
@@ -94,3 +95,9 @@ app.listen(9000, () => {
     console.log('Ecommerce server is listening at 127.0.0.1:9000')
 
 })
+
+function generateID() {
+    let num = Number(Date.now())
+    let id = num % 800000
+    return id
+}
